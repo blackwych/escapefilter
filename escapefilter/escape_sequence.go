@@ -49,6 +49,23 @@ func processEscapeSequence(s *Screen, rd *bufio.Reader, r rune) error {
 				return err
 			}
 		}
+	case ']': // OSC
+		osc, err := readOperatingSystemCommand(rd)
+		if err != nil {
+			if err == invalidOperatingSystemCommand {
+				return nil // just ignore
+			} else {
+				return err
+			}
+		}
+
+		if err := processOperatingSystemCommand(s, osc); err != nil {
+			if err == invalidOperatingSystemCommand {
+				return nil // just ignore
+			} else {
+				return err
+			}
+		}
 	default:
 		// unsupported, just ignore
 	}
